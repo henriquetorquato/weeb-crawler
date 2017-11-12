@@ -18,13 +18,13 @@ class Request:
         Returns the header in the json file
         """
         try:
-            header_file = open("lib/data/header.json", "r")
+            header_file = open("classes/data/header.json", "r")
             header_obj = json.loads(header_file.read())
             return header_obj
 
         except (OSError, IOError) as err:
             print(err)
-            return []
+            return {'':''}
 
 
     def request_page(self):
@@ -33,7 +33,8 @@ class Request:
         """
         try:
             response = request.urlopen(self.req)
-            return BeautifulSoup(response.read(), "html5lib")
+            return response.read()
+            # return BeautifulSoup(response.read(), "html5lib")
 
         except error.HTTPError as err:
             return err
@@ -44,7 +45,7 @@ class Request:
         Request wrapper, to garante request is successful
         """
         request_result = self.request_page()
-        while isinstance(request_result, str):
+        while request_result == "HTTP Error 500: Internal Server Error":
             request_result = self.request_page()
 
-        return request_result
+        return BeautifulSoup(request_result, "html5lib")

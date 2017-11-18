@@ -138,7 +138,8 @@ DROP TABLE IF EXISTS `weeb_crawler`.`gender_tags` ;
 CREATE TABLE IF NOT EXISTS `weeb_crawler`.`gender_tags` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `tag_name` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`id`))
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `tag_name_UNIQUE` (`tag_name` ASC))
 ENGINE = InnoDB;
 
 

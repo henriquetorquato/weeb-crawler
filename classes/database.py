@@ -41,7 +41,7 @@ class Database(metaclass=Singleton):
             return conn
 
         except pymysql.MySQLError as err:
-            print(err)
+            print("Database open connection error: ", err)
             return False
 
 
@@ -66,5 +66,15 @@ class Database(metaclass=Singleton):
             return cursor.fetchall()
 
         except pymysql.MySQLError as err:
-            print(err)
+            print("Database query execution error: ", err)
             return []
+
+
+    def last_inserted_id(self):
+
+        try:
+            query = """SELECT LAST_INSERT_ID()"""
+            return self.execute(query)[0][0]
+
+        except Exception as err:
+            print("Database last id error: ", err)

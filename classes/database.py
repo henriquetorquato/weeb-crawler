@@ -1,7 +1,15 @@
 import pymysql
 from classes.config import Config
+from classes.singleton import Singleton
 
-class Database:
+class Database(metaclass=Singleton):
+
+    """
+    Class responsible for connecting and making
+    operations on the database, it uses a singleton
+    to maintain a always open connection,
+    thus saving resources
+    """
 
     def __init__(self):
 
@@ -16,30 +24,46 @@ class Database:
 
 
     def connect(self):
-
+        """
+        Responsible for opening the connection to the database
+        and setting the charset
+        """
         try:
             conn = pymysql.connect(self.host,
                                    self.user,
                                    self.passwd,
                                    self.name)
+            cursor = conn.cursor()
+            conn.set_charset('utf8')
+            cursor.execute('SET NAMES utf8;')
+            cursor.execute('SET CHARACTER SET utf8;')
+            cursor.execute('SET character_set_connection=utf8;')
             return conn
 
         except pymysql.MySQLError as err:
             print(err)
             return False
 
-    
-    def disconnect(self):
 
+    def disconnect(self):
+        """
+        Responsible for closing the connection to the database
+        """
         self.conn.close()
 
-    def query(self, query):
+
+    def execute(self, query, params=None):
+        """
+        Responsible for executing queries on the database
+        """
+        if params is None:
+            params = []
 
         try:
             cursor = self.conn.cursor()
-            cursor.execute(query)
-            print(cursor.fetchall())
-            self.disconnect()
+            cursor.execute(query, params)
+            self.conn.commit()
+            return cursor.fetchall()
 
         except pymysql.MySQLError as err:
             print(err)

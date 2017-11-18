@@ -14,7 +14,7 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 -- -----------------------------------------------------
 -- Schema weeb_crawler
 -- -----------------------------------------------------
-CREATE DATABASE IF NOT EXISTS `weeb_crawler` DEFAULT CHARACTER SET utf8 ;
+CREATE DATABASE IF NOT EXISTS `weeb_crawler` DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
 USE `weeb_crawler` ;
 
 -- -----------------------------------------------------
@@ -23,7 +23,7 @@ USE `weeb_crawler` ;
 DROP TABLE IF EXISTS `weeb_crawler`.`manga` ;
 
 CREATE TABLE IF NOT EXISTS `weeb_crawler`.`manga` (
-  `id` INT NOT NULL,
+  `id` INT NOT NULL AUTO_INCREMENT,
   `muID` VARCHAR(6) NOT NULL,
   `release_year` CHAR(4) NOT NULL,
   `official_title` VARCHAR(250) NOT NULL,
@@ -231,3 +231,10 @@ ENGINE = InnoDB;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+INSERT INTO weeb_crawler.status_tags VALUES (NULL, "Completed"),
+											(NULL, "Ecchi"),
+											(NULL, "Hentai"),
+											(NULL, "Mature"),
+											(NULL, "Yaoi"),
+											(NULL, "Yuri");

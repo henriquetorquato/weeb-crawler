@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 class Request:
 
     """
-    Handles the requests, and return a soup
+    Handles the requests
     """
 
     def __init__(self, url):

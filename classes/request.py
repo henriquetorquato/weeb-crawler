@@ -1,5 +1,6 @@
-import json
-from urllib import request, error
+import json, zlib
+# from urllib import request, error
+from requests import get, post, exceptions
 from bs4 import BeautifulSoup
 
 class Request:
@@ -10,20 +11,21 @@ class Request:
 
     def __init__(self, url):
 
-        self.req = request.Request(url, headers=self.read_header())
+        self.url = url
+        self.decode_gzip = lambda response: zlib.decompress(response, 16 + zlib.MAX_WBITS)
 
 
-    def read_header(self):
+    def header(self, header_type):
         """
-        Returns the header in the json file
+        Returns the get header stored in the json file
         """
         try:
-            header_file = open("classes/data/header.json", "r")
+            header_file = open("lib/headers/%s.json" % header_type, "r")
             header_obj = json.loads(header_file.read())
             return header_obj
 
         except (OSError, IOError) as err:
-            print(err)
+            print("Header file read error: ", err)
             return {'':''}
 
 
@@ -32,12 +34,38 @@ class Request:
         Makes the actual request, return a soup
         """
         try:
-            response = request.urlopen(self.req)
-            return response.read()
-            # return BeautifulSoup(response.read(), "html5lib")
+            req = get(self.url, headers=self.header('get'))
+            if req.encoding == 'gzip':
+                return self.decode_gzip(req.text)
+            else:
+                return req.text
+            
+        except exceptions.TooManyRedirects:
+            print("Request too many redirections on url <%s>" % self.url)
+            return "Error"
 
-        except error.HTTPError as err:
-            return err
+        except exceptions.Timeout:
+            print("Request timeout on url <%s>" % self.url)
+            return "Error"
+
+        except exceptions.RequestException as err:
+            print("Request error: ", err)
+            return "Error"
+
+
+    def get_json(self, send_data=None):
+        """
+        Send json post and expects a json return
+        """
+        if send_data is None:
+            send_data = []
+
+        try:
+            req = post(self.url, headers=self.header('post'), data=json.dumps(send_data))
+            return req.json()
+
+        except Exception as err:
+            print("Request send post error: ", err)
 
 
     def soup(self):
@@ -45,7 +73,7 @@ class Request:
         Request wrapper, to garante request is successful
         """
         request_result = self.request_page()
-        while request_result == "HTTP Error 500: Internal Server Error":
+        while request_result is "Error":
             request_result = self.request_page()
 
         return BeautifulSoup(request_result, "html5lib")

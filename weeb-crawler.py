@@ -1,8 +1,11 @@
-#bs4, urllib, html5lib, PyMySQL
+#bs4, requests, html5lib, PyMySQL, zlib
 
 # from class.request import Request
 import time, datetime
 from scripts.get_mangas import get_mangas
+
+from classes.manga import Manga
+from classes.chapters import Chapters
 
 # req = Request("http://unionmangas.net/leitor/Berserk/112")
 # print(req.soup())

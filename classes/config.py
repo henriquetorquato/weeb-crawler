@@ -17,7 +17,7 @@ class Config:
         Read the content of the configurations file
         """
         try:
-            self.config_parser.read("config.conf")
+            self.config_parser.read("config.ini")
 
         except configparser.Error as err:
             print(err)

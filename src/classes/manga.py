@@ -1,25 +1,33 @@
 import json
-from classes.database import Database
-from classes.request import Request
-from classes.chapters import Chapters
+from src.classes.database import Database
+from src.classes.request import Request
+from src.classes.chapter import Chapter
 
 class Manga:
 
     def __init__(self, url):
 
         self.url = url
-        self.page = self.get_page()
-        self.title = self.get_title()
-        self.description = self.get_description()
-        self.muID = self.get_mu_id()
-        self.alternative_titles = None
-        self.gender_tags = None
-        self.authors = None
-        self.artists = None
-        self.status = None
-        self.get_header_info()
+        self.id = None
 
-        print("[%s] %s" % (self.muID, self.title))
+        query = """SELECT id FROM manga WHERE page_url=%s"""
+        database = Database()
+        result = database.execute(query, [url])
+        if result is ():
+            self.page = self.get_page()
+            self.title = self.get_title()
+            self.description = self.get_description()
+            self.muID = self.get_mu_id()
+            self.alternative_titles = None
+            self.gender_tags = None
+            self.authors = None
+            self.artists = None
+            self.status = None
+            self.get_header_info()
+            self.save_manga()
+            self.get_chapters()
+        else:
+            self.id = result[0][0]
 
 
     def get_page(self):
@@ -99,3 +107,41 @@ class Manga:
 
         except Exception as err:
             print("MCD search error: ", err)
+
+
+    def get_chapters(self):
+        """
+        Get all the chapter from the manga main page,
+        then save each one
+        """
+        try:
+            chapter_containers = self.page.findAll("div", {"class": "row lancamento-linha"})
+            for chapter_container in chapter_containers:
+                chapter_container = chapter_container.findAll("div",
+                                                              {"class": "col-xs-6 col-md-6"})[0]
+                chapter = Chapter(chapter_container.findAll("a", {"href": True})[0]['href'], self.id)
+
+        except Exception as err:
+            print("Chapters search error: ", err)
+
+
+    def save_manga(self):
+        """
+        Save the manga in the database
+        """
+
+        try:
+            database = Database()
+            if self.id is None:
+                query = """INSERT INTO manga VALUES (NULL, %s, %s, %s, %s, %s, %s, %s, %s)"""
+                database.execute(query, [self.muID, self.url, None, self.title,
+                                         self.description, self.status, 0, None])
+                self.id = database.last_inserted_id()
+                print("Added new manga: [%s] %s" % (self.id, self.title))
+            else:
+                print("Already at database: [%s]" % self.id)
+
+        except Exception as err:
+            print("Save manga error: ", err)
+
+

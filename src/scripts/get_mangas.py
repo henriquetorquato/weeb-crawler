@@ -1,6 +1,6 @@
 import json
-from classes.request import Request
-from classes.manga import Manga
+from src.classes.request import Request
+from src.classes.manga import Manga
 
 def get_mangas():
 

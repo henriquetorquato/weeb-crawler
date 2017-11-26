@@ -1,6 +1,6 @@
 import pymysql
-from classes.config import Config
-from classes.singleton import Singleton
+from src.classes.config import Config
+from src.classes.singleton import Singleton
 
 class Database(metaclass=Singleton):
 

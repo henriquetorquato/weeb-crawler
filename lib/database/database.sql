@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `weeb_crawler`.`manga` (
   `page_url` VARCHAR(200) NOT NULL,
   `release_year` CHAR(4) NULL,
   `official_title` VARCHAR(250) NOT NULL,
-  `description` VARCHAR(500) NOT NULL,
+  `description` VARCHAR(1000) NOT NULL,
   `status` VARCHAR(45) NOT NULL,
   `available` TINYINT NOT NULL,
   `rank` INT NULL,

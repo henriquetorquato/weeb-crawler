@@ -1,5 +1,4 @@
 import json, zlib
-# from urllib import request, error
 from requests import get, post, exceptions
 from bs4 import BeautifulSoup
 
@@ -20,7 +19,7 @@ class Request:
         Returns the get header stored in the json file
         """
         try:
-            header_file = open("lib/headers/%s.json" % header_type, "r")
+            header_file = open("src/headers/%s.json" % header_type, "r")
             header_obj = json.loads(header_file.read())
             return header_obj
 

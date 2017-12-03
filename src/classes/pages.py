@@ -3,7 +3,7 @@ from src.classes.database import Database
 
 class Pages:
 
-    def __init__(self, chapter_url, chapter_id, manga_id):
+    def __init__(self, manga_id, chapter_id, chapter_url=""):
 
         self.chapter_id = chapter_id
         self.manga_id = manga_id
@@ -11,7 +11,6 @@ class Pages:
         self.error_count = 0
         self.chapter = self.get_chapter()
         self.pages = self.get_pages()
-        self.save_pages()
 
 
     def get_chapter(self):
@@ -47,15 +46,18 @@ class Pages:
             print("Get pages error: ", err)
 
 
-    def save_pages(self):
+    def save(self):
         """
         Saves the manga pages
         """
         try:
             database = Database()
-            query = """INSERT INTO page VALUES (NULL, %s, %s, %s)"""
+            check_query = """SELECT id FROM page WHERE img_url=%s"""
+            insert_query = """INSERT INTO page VALUES (NULL, %s, %s, %s)"""
             for page in self.pages:
-                database.execute(query, [page, self.chapter_id, self.manga_id])
+                result = database.execute(check_query, [page])
+                if result is ():
+                    database.execute(insert_query, [page, self.chapter_id, self.manga_id])
 
         except Exception as err:
             print("Save page error: ", err)

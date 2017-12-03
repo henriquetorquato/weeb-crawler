@@ -1,7 +1,11 @@
-import json
+import json, re
 from src.classes.database import Database
 from src.classes.request import Request
 from src.classes.chapter import Chapter
+from src.classes.titles import Titles
+from src.classes.authors import Authors
+from src.classes.artists import Artists
+from src.classes.genders import Genders
 
 class Manga:
 
@@ -24,8 +28,15 @@ class Manga:
             self.artists = None
             self.status = None
             self.get_header_info()
-            self.save_manga()
+
+            self.save()
+            self.save_titles()
+            self.save_authors()
+            self.save_artists()
+            self.save_gender()
             self.get_chapters()
+            print("---")
+
         else:
             self.id = result[0][0]
 
@@ -75,7 +86,7 @@ class Manga:
         try:
             header_content = self.page.findAll("h4", {"class": "media-heading manga-perfil"})
 
-            self.alternative_titles = header_content[0].contents[1:]
+            self.alternative_titles = re.split(', ', header_content[0].contents[1:][0])
 
             gender_tags_container = header_content[1].findAll("a", {"href": True})
             self.gender_tags = [tag.text for tag in gender_tags_container]
@@ -119,29 +130,59 @@ class Manga:
             for chapter_container in chapter_containers:
                 chapter_container = chapter_container.findAll("div",
                                                               {"class": "col-xs-6 col-md-6"})[0]
-                chapter = Chapter(chapter_container.findAll("a", {"href": True})[0]['href'], self.id)
+                chapter = Chapter(self.id, chapter_container.findAll("a", {"href": True})[0]['href'])
+                chapter.save()
+                chapter.get_pages()
+
+            print("Found %s chapter(s)" % len(chapter_containers))
 
         except Exception as err:
             print("Chapters search error: ", err)
 
 
-    def save_manga(self):
+    def save(self):
         """
         Save the manga in the database
         """
-
         try:
             database = Database()
-            if self.id is None:
-                query = """INSERT INTO manga VALUES (NULL, %s, %s, %s, %s, %s, %s, %s, %s)"""
-                database.execute(query, [self.muID, self.url, None, self.title,
-                                         self.description, self.status, 0, None])
-                self.id = database.last_inserted_id()
-                print("Added new manga: [%s] %s" % (self.id, self.title))
-            else:
-                print("Already at database: [%s]" % self.id)
+            query = """INSERT INTO manga VALUES (NULL, %s, %s, %s, %s, %s, %s, %s, %s)"""
+            database.execute(query, [self.muID, self.url, None, self.title,
+                                        self.description, self.status, 0, None])
+            self.id = database.last_inserted_id()
+            print("Saved %s" % self.title)
 
         except Exception as err:
             print("Save manga error: ", err)
 
 
+    def save_authors(self):
+        """
+        Save the manga authors
+        """
+        authors = Authors(self.id, self.authors)
+        authors.save()
+
+
+    def save_artists(self):
+        """
+        Save the manga artists
+        """
+        artists = Artists(self.id, self.artists)
+        artists.save()
+
+
+    def save_titles(self):
+        """
+        Save the manga alternative titles
+        """
+        titles = Titles(self.id, self.alternative_titles)
+        titles.save()
+
+
+    def save_gender(self):
+        """
+        Save the manga genders
+        """
+        genders = Genders(self.id, self.gender_tags)
+        genders.save()

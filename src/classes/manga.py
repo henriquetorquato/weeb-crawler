@@ -27,9 +27,9 @@ class Manga:
 
         self.page = self.get_page()
         self.title = self.get_title()
+        self.muID = self.get_mu_id()
         if result is ():
             self.description = self.get_description()
-            self.muID = self.get_mu_id()
             self.alternative_titles = None
             self.gender_tags = None
             self.authors = None
@@ -48,6 +48,7 @@ class Manga:
 
         else:
             self.id = result[0][0]
+            self.get_covers()
             self.get_chapters()
             print("Updated Manga: %s" % self.title)
 

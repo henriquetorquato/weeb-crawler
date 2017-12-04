@@ -7,7 +7,7 @@ class Pages:
 
         self.chapter_id = chapter_id
         self.manga_id = manga_id
-        self.url = chapter_url
+        self.chapter_url = chapter_url
         self.error_count = 0
         self.chapter = self.get_chapter()
         self.pages = self.get_pages()
@@ -18,7 +18,7 @@ class Pages:
         Request the chapters and returns a soup
         """
         try:
-            req = Request(self.url)
+            req = Request(self.chapter_url)
             soup = req.soup()
             return soup
 

@@ -23,7 +23,6 @@ class Artists:
             query = """INSERT INTO artists VALUES (NULL, %s, %s)"""
             for artist in self.artists:
                 database.execute(query, [artist, self.manga_id])
-            # print("Saved %s artist(s)" % len(self.artists))
 
         except Exception as err:
             print("Artists save error: ", err)

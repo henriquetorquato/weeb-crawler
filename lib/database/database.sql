@@ -33,7 +33,6 @@ CREATE TABLE IF NOT EXISTS `weeb_crawler`.`manga` (
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC),
   UNIQUE INDEX `official_title_UNIQUE` (`official_title` ASC),
-  UNIQUE INDEX `muID_UNIQUE` (`muID` ASC),
   UNIQUE INDEX `page_url_UNIQUE` (`page_url` ASC))
 ENGINE = InnoDB;
 

@@ -1,7 +1,7 @@
 import json, re
 from src.classes.database import Database
 from src.classes.request import Request
-from src.classes.chapter import Chapter
+from src.classes.chapters import Chapters
 from src.classes.titles import Titles
 from src.classes.authors import Authors
 from src.classes.artists import Artists
@@ -17,9 +17,10 @@ class Manga:
         query = """SELECT id FROM manga WHERE page_url=%s"""
         database = Database()
         result = database.execute(query, [url])
+
+        self.page = self.get_page()
+        self.title = self.get_title()
         if result is ():
-            self.page = self.get_page()
-            self.title = self.get_title()
             self.description = self.get_description()
             self.muID = self.get_mu_id()
             self.alternative_titles = None
@@ -35,10 +36,14 @@ class Manga:
             self.save_artists()
             self.save_gender()
             self.get_chapters()
-            print("---")
+            print("Added new Manga: %s" % self.title)
 
         else:
             self.id = result[0][0]
+            self.get_chapters()
+            print("Updated Manga: %s" % self.title)
+
+        print("---")
 
 
     def get_page(self):
@@ -126,13 +131,15 @@ class Manga:
         then save each one
         """
         try:
+            chapters = []
             chapter_containers = self.page.findAll("div", {"class": "row lancamento-linha"})
             for chapter_container in chapter_containers:
                 chapter_container = chapter_container.findAll("div",
                                                               {"class": "col-xs-6 col-md-6"})[0]
-                chapter = Chapter(self.id, chapter_container.findAll("a", {"href": True})[0]['href'])
-                chapter.save()
-                chapter.get_pages()
+                chapters.append(chapter_container.findAll("a", {"href": True})[0]['href'])
+
+            chapter = Chapters(self.id, chapters)
+            chapter.save()
 
             print("Found %s chapter(s)" % len(chapter_containers))
 
@@ -150,7 +157,6 @@ class Manga:
             database.execute(query, [self.muID, self.url, None, self.title,
                                         self.description, self.status, 0, None])
             self.id = database.last_inserted_id()
-            print("Saved %s" % self.title)
 
         except Exception as err:
             print("Save manga error: ", err)

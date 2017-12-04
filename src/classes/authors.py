@@ -18,11 +18,7 @@ class Authors:
         """
         Save the manga authors at the database
         """
-        try:
-            database = Database()
-            query = """INSERT INTO authors VALUES (NULL, %s, %s)"""
-            for author in self.authors:
-                database.execute(query, [author, self.manga_id])
-
-        except Exception as err:
-            print("Author save error: ", err)
+        database = Database()
+        query = """INSERT INTO authors VALUES (NULL, %s, %s)"""
+        for author in self.authors:
+            database.execute(query, [author, self.manga_id])

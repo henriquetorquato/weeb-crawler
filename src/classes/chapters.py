@@ -3,6 +3,10 @@ from src.classes.pages import Pages
 
 class Chapters:
 
+    """
+    Get the chapters of the manga
+    """
+
     def __init__(self, manga_id, urls=None):
         if urls is None:
             self.urls = []
@@ -16,24 +20,20 @@ class Chapters:
         """
         Save the chapter in the database
         """
-        try:
-            database = Database()
-            check_query = """SELECT id FROM chapter WHERE manga_id=%s AND number=%s"""
-            insert_query = """INSERT INTO chapter VALUES (NULL, %s, %s, %s)"""
-            for url in self.urls:
-                chapter_id = None
-                chapter_number = url.split("/")[-1]
-                result = database.execute(check_query, [self.manga_id, chapter_number])
+        database = Database()
+        check_query = """SELECT id FROM chapter WHERE manga_id=%s AND number=%s"""
+        insert_query = """INSERT INTO chapter VALUES (NULL, %s, %s, %s)"""
+        for url in self.urls:
+            chapter_id = None
+            chapter_number = url.split("/")[-1]
+            result = database.execute(check_query, [self.manga_id, chapter_number])
 
-                if result is ():
-                    database.execute(insert_query, [chapter_number, url, self.manga_id])
-                    chapter_id = database.last_inserted_id()
+            if result is ():
+                database.execute(insert_query, [chapter_number, url, self.manga_id])
+                chapter_id = database.last_inserted_id()
 
-                else:
-                    chapter_id = result[0][0]
+            else:
+                chapter_id = result[0][0]
 
-                chapter_pages = Pages(self.manga_id, chapter_id, url)
-                chapter_pages.save()
-
-        except Exception as err:
-            print("Chapter %s save error: ", err)
+            chapter_pages = Pages(self.manga_id, chapter_id, url)
+            chapter_pages.save()

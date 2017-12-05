@@ -128,6 +128,7 @@ CREATE TABLE IF NOT EXISTS `weeb_crawler`.`chapter` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `number` VARCHAR(50) NOT NULL,
   `chapter_url` VARCHAR(200) NOT NULL,
+  `all_pages` TINYINT NULL,
   `manga_id` INT NOT NULL,
   PRIMARY KEY (`id`, `manga_id`),
   INDEX `fk_chapters_manga1_idx` (`manga_id` ASC),

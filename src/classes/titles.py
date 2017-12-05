@@ -20,11 +20,16 @@ class Titles:
         Insert the manga alternative titles
         in the database
         """
+        new_titles = 0
         database = Database()
         check_query = """SELECT id FROM titles WHERE name=%s AND manga_id=%s"""
         insert_query = """INSERT INTO titles VALUES (NULL, %s, %s)"""
         for title in self.titles:
             result = database.execute(check_query, [title, self.manga_id])
+            title = title[1:] if title[0] == " " else title
+
             if title != "-" and result is ():
                 database.execute(insert_query, [title, self.manga_id])
-        print("Found %s alternative title(s)" % len(self.titles))
+                new_titles += 1
+
+        print("Found %s new alternative title(s)" % new_titles)

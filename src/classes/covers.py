@@ -42,10 +42,15 @@ class Covers:
         """
         Saves the covers in the database
         """
+        new_covers = 0
         database = Database()
-        query = """INSERT INTO cover VALUES (NULL, %s, %s, %s, %s)"""
+        check_query = """SELECT id FROM cover WHERE url=%s AND manga_id=%s"""
+        insert_query = """INSERT INTO cover VALUES (NULL, %s, %s, %s, %s)"""
         for cover in self.covers:
-            database.execute(query,
-                             [cover['url'], cover['width'], cover['height'], self.manga_id])
+            result = database.execute(check_query, [cover['url'], self.manga_id])
+            if result is ():
+                database.execute(insert_query,
+                                [cover['url'], cover['width'], cover['height'], self.manga_id])
+                new_covers += 1
 
-        print("Found %s cover(s)" % len(self.covers))
+        print("Found %s new cover(s)" % new_covers)

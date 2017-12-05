@@ -129,8 +129,6 @@ class Manga:
         chapter = Chapters(self.id, chapters)
         chapter.save()
 
-        print("Found %s chapter(s)" % len(chapter_containers))
-
 
     def get_covers(self):
         """

@@ -25,6 +25,8 @@ class Manga:
         database = Database()
         result = database.execute(query, [url])
 
+        self.file = open("last-manga-content.html", "w")
+
         self.page = self.get_page()
         self.title = self.get_title()
         self.muID = self.get_mu_id()
@@ -61,6 +63,7 @@ class Manga:
         """
         req = Request(self.url)
         soup = req.soup()
+        self.file.write(str(soup.encode("utf-8")))
         return soup
 
 

@@ -1,4 +1,6 @@
 import json, re
+from difflib import SequenceMatcher
+from src.classes.config import Config
 from src.classes.database import Database
 from src.classes.request import Request
 from src.classes.chapters import Chapters
@@ -17,6 +19,10 @@ class Manga:
     """
 
     def __init__(self, url):
+
+        conf = Config()
+        conf = conf.get("muID")
+        self.title_diff_ratio = float(conf['diff_ratio'])
 
         self.url = url
         self.id = None
@@ -111,7 +117,7 @@ class Manga:
         req = Request('https://mcd.iosphe.re/api/v1/search/')
         results = req.get_json({"Title": self.title})
         for result in results['Results']:
-            if self.title == result[1]:
+            if SequenceMatcher(None, self.title, result[1]).ratio() > self.title_diff_ratio:
                 mu_id = result[0]
 
         return mu_id

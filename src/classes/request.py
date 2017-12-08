@@ -34,6 +34,9 @@ class Request:
         """
         try:
             req = get(self.url, headers=self.header('get'))
+            while req.status_code != 200:
+                req = get(self.url, headers=self.header('get'))
+
             if req.encoding == 'gzip':
                 return self.decode_gzip(req.text)
             else:

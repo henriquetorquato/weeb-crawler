@@ -1,6 +1,7 @@
 import pymysql
 from src.classes.config import Config
 from src.classes.singleton import Singleton
+from src.classes.logging import Logging
 
 class Database(metaclass=Singleton):
 
@@ -20,6 +21,7 @@ class Database(metaclass=Singleton):
         self.user = database_conf['user']
         self.passwd = database_conf['passwd']
 
+        self.log = Logging("Database")
         self.conn = self.connect()
 
 
@@ -41,7 +43,7 @@ class Database(metaclass=Singleton):
             return conn
 
         except pymysql.MySQLError as err:
-            print("Database open connection error: ", err)
+            self.log.error(err)
             return False
 
 
@@ -66,7 +68,7 @@ class Database(metaclass=Singleton):
             return cursor.fetchall()
 
         except pymysql.MySQLError as err:
-            print("Database query execution error: ", err)
+            self.log.error(err)
             return []
 
 
@@ -77,4 +79,5 @@ class Database(metaclass=Singleton):
             return self.execute(query)[0][0]
 
         except Exception as err:
-            print("Database last id error: ", err)
+            self.log.error(err)
+            

@@ -1,4 +1,5 @@
 from src.classes.database import Database
+from src.classes.logging import Logging
 
 class Authors:
 
@@ -7,6 +8,9 @@ class Authors:
     """
 
     def __init__(self, manga_id, authors=None):
+
+        self.log = Logging("weeb_crawler")
+
         self.manga_id = manga_id
         if authors is None:
             self.authors = []
@@ -28,4 +32,4 @@ class Authors:
                 database.execute(insert_query, [author, self.manga_id])
                 new_authors += 1
 
-        print("Found %s new author(s)" % new_authors)
+        self.log.info("Found %s new author(s)" % new_authors)

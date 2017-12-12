@@ -1,6 +1,7 @@
 import json, zlib
 from requests import get, post, exceptions
 from bs4 import BeautifulSoup
+from src.classes.logging import Logging
 
 class Request:
 
@@ -10,6 +11,7 @@ class Request:
 
     def __init__(self, url):
 
+        self.log = Logging("Requests")
         self.url = url
         self.decode_gzip = lambda response: zlib.decompress(response, 16 + zlib.MAX_WBITS)
 
@@ -24,7 +26,7 @@ class Request:
             return header_obj
 
         except (OSError, IOError) as err:
-            print("Header file read error: ", err)
+            self.log.error(err)
             return {'':''}
 
 
@@ -43,15 +45,15 @@ class Request:
                 return req.text
             
         except exceptions.TooManyRedirects:
-            print("Request too many redirections on url <%s>" % self.url)
+            self.log.error("Request too many redirections on url <%s>" % self.url)
             return "Error"
 
         except exceptions.Timeout:
-            print("Request timeout on url <%s>" % self.url)
+            self.log.error("Request timeout on url <%s>" % self.url)
             return "Error"
 
         except exceptions.RequestException as err:
-            print("Request error: ", err)
+            self.log.error(err)
             return "Error"
 
 
@@ -67,7 +69,7 @@ class Request:
             return req.json()
 
         except Exception as err:
-            print("Request send post error: ", err)
+            self.log.error(err)
 
 
     def soup(self):

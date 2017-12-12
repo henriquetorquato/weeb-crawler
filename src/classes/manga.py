@@ -9,6 +9,7 @@ from src.classes.authors import Authors
 from src.classes.artists import Artists
 from src.classes.genders import Genders
 from src.classes.covers import Covers
+from src.classes.logging import Logging
 
 class Manga:
 
@@ -19,6 +20,8 @@ class Manga:
     """
 
     def __init__(self, url):
+
+        self.log = Logging("weeb_crawler")
 
         conf = Config()
         conf = conf.get("muID")
@@ -52,15 +55,13 @@ class Manga:
             self.save_gender()
             self.get_covers()
             self.get_chapters()
-            print("Added new Manga: %s" % self.title)
+            self.log.info("Added new Manga: %s" % self.title)
 
         else:
             self.id = result[0][0]
             self.get_covers()
             self.get_chapters()
-            print("Updated Manga: %s" % self.title)
-
-        print("---")
+            self.log.info("Updated Manga: %s" % self.title)
 
 
     def get_page(self):

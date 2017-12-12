@@ -1,4 +1,5 @@
 import configparser
+from src.classes.logging import Logging
 
 class Config:
 
@@ -7,6 +8,8 @@ class Config:
     """
 
     def __init__(self):
+
+        self.log = Logging("Config")
 
         self.config_parser = configparser.SafeConfigParser()
         self.read_file()
@@ -20,7 +23,7 @@ class Config:
             self.config_parser.read("src/config.ini")
 
         except configparser.Error as err:
-            print(err)
+            self.log.error(err)
 
 
     def get(self, section):
@@ -32,5 +35,5 @@ class Config:
             return self.config_parser._sections[section]
 
         except configparser.Error as err:
-            print(err)
+            self.log.error(err)
             return []

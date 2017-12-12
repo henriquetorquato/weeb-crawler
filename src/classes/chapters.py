@@ -1,5 +1,6 @@
 from src.classes.database import Database
 from src.classes.pages import Pages
+from src.classes.logging import Logging
 
 class Chapters:
 
@@ -8,6 +9,9 @@ class Chapters:
     """
 
     def __init__(self, manga_id, urls=None):
+
+        self.log = Logging("weeb_crawler")
+
         if urls is None:
             self.urls = []
         else:
@@ -45,4 +49,4 @@ class Chapters:
                 chapter_pages.save()
                 database.execute(update_query, [chapter_id])
 
-        print("Found %s new chapter(s)" % new_chapters)
+        self.log.info("Found %s new chapter(s)" % new_chapters)

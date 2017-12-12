@@ -1,4 +1,5 @@
 from src.classes.database import Database
+from src.classes.logging import Logging
 
 class Artists:
 
@@ -7,6 +8,9 @@ class Artists:
     """
 
     def __init__(self, manga_id, artists=None):
+
+        self.log = Logging("weeb_crawler")
+
         self.manga_id = manga_id
         if artists is None:
             self.artists = []
@@ -28,4 +32,4 @@ class Artists:
                 database.execute(insert_query, [artist, self.manga_id])
                 new_artists += 1
         
-        print("Found %s new artist(s)" % new_artists)
+        self.log.info("Found %s new artist(s)" % new_artists)

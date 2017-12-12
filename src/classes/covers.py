@@ -1,6 +1,7 @@
 import json
 from src.classes.database import Database
 from src.classes.request import Request
+from src.classes.logging import Logging
 
 class Covers:
 
@@ -10,6 +11,9 @@ class Covers:
     """
 
     def __init__(self, manga_id, muID=None):
+
+        self.log = Logging("weeb_crawler")
+
         self.base_url = "https://mcd.iosphe.re/api/v1/series/%s/"
         self.manga_id = manga_id
         self.muID = muID
@@ -53,4 +57,4 @@ class Covers:
                                 [cover['url'], cover['width'], cover['height'], self.manga_id])
                 new_covers += 1
 
-        print("Found %s new cover(s)" % new_covers)
+        self.log.info("Found %s new cover(s)" % new_covers)

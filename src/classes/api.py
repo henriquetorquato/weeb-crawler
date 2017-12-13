@@ -14,7 +14,7 @@ class Api:
         self.log = Logging("Api")
         self.debug = int(cfg["logging"])
         self.host = cfg["host"]
-        self.port = cfg["port"]
+        self.port = int(cfg["port"])
         self.app = self.create_app()
 
 

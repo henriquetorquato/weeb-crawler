@@ -1,9 +1,12 @@
-import logging
+import logging, os
 from datetime import datetime
 
 class Logging():
 
     def __init__(self, name):
+
+        if not os.path.exists("log/"):
+            os.mkdir("log/")
 
         self.logger = self.set_logger(name)
         logging.basicConfig(

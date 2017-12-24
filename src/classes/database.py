@@ -61,6 +61,9 @@ class Database(metaclass=Singleton):
         if params is None:
             params = []
 
+        if not self.conn.open:
+            self.conn = self.connect()
+
         try:
             cursor = self.conn.cursor()
             cursor.execute(query, params)

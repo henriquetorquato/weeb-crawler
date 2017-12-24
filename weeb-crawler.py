@@ -1,5 +1,4 @@
 from datetime import datetime
-from flask import Flask
 from multiprocessing import Process, Value
 from src.classes.logging import Logging
 from src.scripts.get_mangas import get_mangas

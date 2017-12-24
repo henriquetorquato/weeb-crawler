@@ -1,5 +1,6 @@
 import logging, jinja2, json
 from flask import Flask, render_template
+from flask_cors import CORS, cross_origin
 from src.classes.database import Database
 from src.classes.config import Config
 from src.classes.logging import Logging
@@ -28,19 +29,16 @@ class Api:
         log = logging.getLogger("werkzeug")
         log.disabled = not self.debug
 
-        # custom_loader = jinja2.ChoiceLoader([
-        #     app.jinja_loader,
-        #     jinja2.FileSystemLoader("src/views")
-        # ])
-        # app.jinja_loader = custom_loader
+        cors = CORS(app)
+        app.config['CORS_HEADERS'] = 'Content-Type'
 
-        # app.add_url_rule("/", "index", self.index)
         return app
 
 
     def add_routes(self):
 
-        @self.app.route("/getLog")
+        @self.app.route("/getLog", methods=["GET"])
+        @cross_origin()
         def get_log():
             log_name = self.log.get_log_name()
             cfg = self.cfg.get("getLog")
@@ -53,6 +51,16 @@ class Api:
                 }
                 return json.dumps(return_data)
 
+        @self.app.route("/getStats", methods=["GET"])
+        @cross_origin()
+        def get_stats():
+            database = Database()
+            result = database.execute("""SELECT
+                                        (SELECT COUNT(id) FROM manga) AS manga_amount,
+                                        (SELECT COUNT(id) FROM chapter) AS chapter_amount,
+                                        (SELECT COUNT(id) FROM page) AS page_amount""")
+            return json.dumps(result[0])
+
 
     def run(self):
 
@@ -60,13 +68,3 @@ class Api:
         self.app.run(use_reloader=False,
                      host=self.host,
                      port=self.port)
-
-
-    # def index(self):
-
-    #     database = Database()
-    #     result = database.execute("""SELECT COUNT(official_title) AS quant 
-    #                               FROM weeb_crawler.manga""", [])
-
-    #     with self.app.app_context():
-    #         return render_template("index.html", var=result[0][0])

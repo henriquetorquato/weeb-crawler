@@ -1,5 +1,3 @@
-# bs4, requests, html5lib, PyMySQL, zlib, Flask
-
 from datetime import datetime
 from flask import Flask
 from multiprocessing import Process, Value
